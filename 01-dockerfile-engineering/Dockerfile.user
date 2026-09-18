@@ -1,0 +1,10 @@
+FROM alpine:3.20
+
+#Create a system group and user named 'appuser'
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+#Swtich context so all following actions and execution happen as this user
+USER appuser
+
+#verify indentity at startup
+CMD ["whoami"]
