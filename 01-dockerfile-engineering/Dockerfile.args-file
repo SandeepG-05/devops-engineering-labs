@@ -1,0 +1,13 @@
+FROM alpine:3.18
+
+# Accept the variable during build phase only
+ARG BUILD_VERSION=1.0.0
+
+# Write it into a static file inside the image layer
+RUN echo "Running in: Production (Build Ver: ${BUILD_VERSION})" > /etc/app_release
+
+# Unset the build variable completely out of the environment scope
+ENV BUILD_VERSION=""
+
+# Print the static file, proving the ENV scope is blank but the file remains
+CMD ["cat", "/etc/app_release"]
