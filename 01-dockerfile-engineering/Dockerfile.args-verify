@@ -1,0 +1,12 @@
+FROM alpine:3.18
+
+ARG BUILD_VERSION
+
+# Bake the secret/version into a static file during build time
+RUN echo "Config baked into file: ${BUILD_VERSION}" > /etc/app_version
+
+# Ensure the runtime environment variable environment stays blank
+ENV BUILD_VERSION=""
+
+# Print both the baked file and the blank environment variable to prove the concept
+CMD cat /etc/app_version && echo "Live Environment variable: [${BUILD_VERSION}]"
