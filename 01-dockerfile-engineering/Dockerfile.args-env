@@ -1,3 +1,4 @@
+# Pull the base lightweight Alpine Linux OS layer to build upon
 FROM alpine:3.18
 
 # 1. Accept the build-time argument
@@ -6,5 +7,5 @@ ARG BUILD_VERSION
 # 2. Intentionally do NOT pass it into an ENV variable.
 ENV LIVE_VERSION=""
 
-# 3. Print the text at runtime using the empty environment variable
-CMD echo "Running in: Production (Build Ver: ${LIVE_VERSION})"
+# 3. Print the text using an explicit compliance shell array to safely process variables
+CMD ["sh", "-c", "echo \"Running in: Production (Build Ver: ${LIVE_VERSION})\""]
