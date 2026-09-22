@@ -1,10 +1,13 @@
-FROM alpine:3.20
+# Pull the base lightweight Alpine Linux OS layer to build upon
+FROM alpine:3.18
 
-#Create a system group and user named 'appuser'
+# Create a system group (-S) and an unprivileged system user (-S) inside the image layout. 
+# This user has no password and minimal filesystem access privileges.
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-#Swtich context so all following actions and execution happen as this user
+# DROP PRIVILEGES: Switch context away from root permanently.
+# This instructs the container engine to run every subsequent command under this low-privileged account.
 USER appuser
 
-#verify indentity at startup
+# Verify the current active operating system user identity at runtime
 CMD ["whoami"]
