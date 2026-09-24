@@ -1,0 +1,10 @@
+# Pull the base lightweight Alpine Linux OS layer to build upon
+FROM alpine:3.18
+
+# Set the unalterable base engine executable command using the fixed exec form array.
+# Every argument sent to this container at runtime will append to the end of this statement.
+ENTRYPOINT ["echo", "System status:"]
+
+# Set the default placeholder parameter string. 
+# It provides a default string to the ENTRYPOINT if a user doesn't pass a custom string at runtime.
+CMD ["All engines nominal."]
