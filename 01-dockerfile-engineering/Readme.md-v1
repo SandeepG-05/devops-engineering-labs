@@ -1,11 +1,15 @@
 # 🏗️ Module 01: Production Dockerfile Engineering
+
 This folder houses validated blueprints for production-grade Docker containers. Each file addresses a critical enterprise infrastructure standard, focusing on application security, runtime isolation, and layer optimization.
 
+---
+
 ## 🛡️ 1. Security & Compliance: Drop-Down Execution Context
-* **File:** Dockerfile.user
+* **File:** `Dockerfile.user`
 * **Concept:** Mitigates host-takeover vectors by dropping root privileges immediately after environment provisioning.
 
 ### 📄 Dockerfile Content:
+```dockerfile
 # Pull the base lightweight Alpine Linux OS layer to build upon
 FROM alpine:3.18
 
@@ -20,29 +24,33 @@ USER appuser
 # Define the default process execution context string.
 # Executes the system identification binary to output the current tracking user payload.
 CMD ["whoami"]
+```
 
-### 💻 Execution Lifecycle:
+```bash
 # Build command:
 docker build -t test-user -f Dockerfile.user .
 
 # Execution command:
 docker run --rm test-user
+```
 
-📋 Expected Reference Output:
+📋 **Expected Reference Output:**
+```text
 appuser
-
-(💡 Security Note: If this ever returns root, your container has failed compliance checks!)
+```
+*(💡 Security Note: If this ever returns root, your container has failed compliance checks!)*
 
 ---
 
 ## 🧪 2. Build Architecture: The Build-Time Dynamic Injector Matrix (ARG vs ENV)
-* **Concept:** Leverages transient build-time variables (ARG) to handle compilation metadata without leaking parameters or configuration variables into live execution contexts (ENV). To showcase different engineering approaches, we test three distinct behavioral patterns:
+* **Concept:** Leverages transient build-time variables (`ARG`) to handle compilation metadata without leaking parameters or configuration variables into live execution contexts (`ENV`). To showcase different engineering approaches, we test three distinct behavioral patterns:
 
 ### Pattern A: The Static Release Artifact (Baked File)
-* **File:** Dockerfile.args-file
+* **File:** `Dockerfile.args-file`
 * **Mechanics:** Consumes the build argument to permanently freeze the release string into an isolated text file inside the image layer, while stripping the dynamic variable out of the active environment list.
 
-#### 📄 Dockerfile Content:
+### 📄 Dockerfile Content:
+```dockerfile
 # Pull the base lightweight Alpine Linux OS layer to build upon
 FROM alpine:3.18
 
@@ -57,22 +65,27 @@ RUN echo "Running in: Production (Build Ver: ${BUILD_VERSION})" > /etc/release_i
 # Configure the default runtime process container engine parameters.
 # Reads out the static, baked filesystem record data directly to standard output.
 CMD ["cat", "/etc/release_info"]
+```
 
-#### 💻 Execution Lifecycle:
+```bash
 # Build command with custom version injection:
 docker build --build-arg BUILD_VERSION=2.4.1 -t test-args-file -f Dockerfile.args-file .
 
 # Execution command:
 docker run --rm test-args-file
+```
 
-📋 Expected Reference Output:
+📋 **Expected Reference Output:**
+```text
 Running in: Production (Build Ver: 2.4.1)
+```
 
 ### Pattern B: The Blank Fallback Context (Vanished Env)
-* **File:** Dockerfile.args-env
+* **File:** `Dockerfile.args-env`
 * **Mechanics:** Demonstrates a strict security configuration where variables are not written to files. It validates that the runtime environment string evaluates to completely empty at execution time, protecting secrets from extraction tools.
 
-#### 📄 Dockerfile Content:
+### 📄 Dockerfile Content:
+```dockerfile
 # Pull the base lightweight Alpine Linux OS layer to build upon
 FROM alpine:3.18
 
@@ -83,22 +96,27 @@ ARG BUILD_VERSION
 # Set up an interactive execution process pipeline wrapper framework.
 # Demonstrates that the variable evaluates to empty because it was never backed by an ENV statement.
 CMD ["sh", "-c", "echo \"Running in: Production (Build Ver: ${BUILD_VERSION})\""]
+```
 
-#### 💻 Execution Lifecycle:
+```bash
 # Build command:
 docker build --build-arg BUILD_VERSION=2.4.1 -t test-args-env -f Dockerfile.args-env .
 
 # Execution command:
 docker run --rm test-args-env
+```
 
-📋 Expected Reference Output:
+📋 **Expected Reference Output:**
+```text
 Running in: Production (Build Ver: )
+```
 
 ### Pattern C: Dual-Layer Compliance Verification (Side-by-Side Audit)
-* **File:** Dockerfile.args-verify
+* **File:** `Dockerfile.args-verify`
 * **Mechanics:** Acts as an automated compliance verification audit tool. It outputs both states side-by-side to prove that filesystem compilation succeeded while simultaneously confirming the live execution runtime remains hollow.
 
-#### 📄 Dockerfile Content:
+### 📄 Dockerfile Content:
+```dockerfile
 # Pull the base lightweight Alpine Linux OS layer to build upon
 FROM alpine:3.18
 
@@ -111,25 +129,30 @@ RUN echo "${BUILD_VERSION}" > /var/build_log
 # Run an automated infrastructure audit script routine framework.
 # Validates the side-by-side behavioral metrics of historical logs vs running environments.
 CMD ["sh", "-c", "echo \"Config baked into file: $(cat /var/build_log)\"; echo \"Live Environment variable: [${BUILD_VERSION}]\""]
+```
 
-#### 💻 Execution Lifecycle:
+```bash
 # Build command:
 docker build --build-arg BUILD_VERSION=2.4.1 -t test-args-verify -f Dockerfile.args-verify .
 
 # Execution command:
 docker run --rm test-args-verify
+```
 
-📋 Expected Reference Output:
+📋 **Expected Reference Output:**
+```text
 Config baked into file: 2.4.1
 Live Environment variable: []
+```
 
 ---
 
 ## 🎛️ 3. Execution Flow: Graceful CLI Parameter Interception
-* **File:** Dockerfile.exec
-* **Concept:** Combines fixed executables (ENTRYPOINT) with default parameters (CMD) to transform containers into flexible, predictable command-line utilities.
+* **File:** `Dockerfile.exec`
+* **Concept:** Combines fixed executables (`ENTRYPOINT`) with default parameters (`CMD`) to transform containers into flexible, predictable command-line utilities.
 
 ### 📄 Dockerfile Content:
+```dockerfile
 # Pull the base lightweight Alpine Linux OS layer to build upon
 FROM alpine:3.18
 
@@ -140,20 +163,28 @@ ENTRYPOINT ["echo", "System status:"]
 # Set the default placeholder parameter string. 
 # It provides a default string to the ENTRYPOINT if a user doesn't pass a custom string at runtime.
 CMD ["All engines nominal."]
+```
 
-### 💻 Execution Lifecycle:
-#### Test A: Run with defaults
+### Test A: Run with defaults
+```bash
 docker build -t test-exec -f Dockerfile.exec .
 docker run --rm test-exec
+```
 
-📋 Expected Reference Output:
+📋 **Expected Reference Output:**
+```text
 System status: All engines nominal.
+```
 
-#### Test B: Overwriting the parameter at runtime
+### Test B: Overwriting the parameter at runtime
+```bash
 docker run --rm test-exec "Warning: High memory load detected!"
+```
 
-📋 Expected Reference Output:
+📋 **Expected Reference Output:**
+```text
 System status: Warning: High memory load detected!
+```
 
 ---
 
@@ -161,9 +192,10 @@ System status: Warning: High memory load detected!
 * **Concept:** Provisions internal verification loops so upstream orchestrators can track container viability natively.
 
 ### Pattern A: Standard Public Route Monitoring
-* **File:** Dockerfile.health
+* **File:** `Dockerfile.health`
 
-#### 📄 Dockerfile Content:
+### 📄 Dockerfile Content:
+```dockerfile
 # Pull the base lightweight Alpine Linux OS layer to build upon
 FROM alpine:3.18
 
@@ -179,16 +211,28 @@ HEALTHCHECK --interval=5s --timeout=3s --start-period=1s --retries=3 \
 # Launch a non-terminating system process allocation baseline container model.
 # Keeps the worker instance state persistent so the tracking monitoring checks run continuously.
 CMD ["sleep", "3600"]
+```
 
-#### 💻 Execution Lifecycle:
+```bash
 docker build -t test-health -f Dockerfile.health .
 docker run -d --name my-health-check test-health
 
-### Pattern B: Restricted Corporate Network Fallback (Offline Safe Fix)
-* **File:** Dockerfile.health-offline
-* **Mechanics:** Avoids network connection errors by scrubbing all web package lookup metrics. It shifts dependencies entirely to the native, pre-baked busybox binary utilities inside standard images to compile offline.
+# Wait 7-10 seconds for the interval loop to fire, then run:
+docker ps
+```
 
-#### 📄 Dockerfile Content:
+📋 **Expected Reference Output:**
+```text
+CONTAINER ID   IMAGE         STATUS                     PORTS
+a1b2c3d4e5f6   test-health   Up 8 seconds (healthy)     80/tcp
+```
+
+### Pattern B: Restricted Corporate Network Fallback (Offline Safe Fix)
+* **File:** `Dockerfile.health-offline`
+* **Mechanics:** Avoids `Permission denied` errors from internal mirrors by scrubbing all `apk` web connections entirely. It switches out dependencies for the native, pre-baked `wget` binary present inside core images to build entirely offline.
+
+### 📄 Dockerfile Content:
+```dockerfile
 # Pull the base lightweight Alpine Linux OS layer to build upon
 FROM alpine:3.18
 
@@ -196,35 +240,3 @@ FROM alpine:3.18
 
 # Configure the native continuous micro-health scan assessment execution script blocks.
 # Swapped out curl for the native pre-installed busybox 'wget' utility to verify loops offline.
-HEALTHCHECK --interval=5s --timeout=3s --start-period=1s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
-
-# Launch a non-terminating system process allocation baseline container model.
-# Keeps the worker instance state persistent so the tracking monitoring checks run continuously.
-CMD ["sleep", "3600"]
-
-#### 💻 Execution Lifecycle:
-docker build -t test-health-offline -f Dockerfile.health-offline .
-docker run -d --name my-health-check-offline test-health-offline
-
-### 💻 Verification Audit (Applicable to Both Patterns)
-# Wait 7-10 seconds for the interval loop to fire, then run:
-docker ps
-
-📋 Expected Reference Output:
-CONTAINER ID   IMAGE         STATUS                     PORTS
-a1b2c3d4e5f6   test-health   Up 8 seconds (healthy)     80/tcp
-
-(💡 Management Note: Look closely at the STATUS column—Docker natively tracks the text (healthy) right inside your terminal. Run docker rm -f my-health-check to clean up when finished.)
-
----
-
-## 📦 5. Runtime Isolation: Safe Sandbox Directory
-* **File:** Dockerfile.work
-* **Concept:** Enforces clean filesystem segregation by establishing explicit isolation layers (WORKDIR) for app execution.
-
-### 📄 Dockerfile Content:
-# Pull the base lightweight Alpine Linux OS layer to build upon
-FROM alpine:3.18
-
-# Establish and transition context parameters to an isolated working space structure.
