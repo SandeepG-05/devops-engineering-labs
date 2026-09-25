@@ -1,0 +1,13 @@
+# Pull the base lightweight Alpine Linux OS layer to build upon
+FROM alpine:3.18
+
+# REMOVED: apk add curl statement to completely bypass corporate firewall blocks
+
+# Configure the native continuous micro-health scan assessment execution script blocks.
+# Swapped curl out for the native pre-installed busybox 'wget' binary utility.
+HEALTHCHECK --interval=5s --timeout=3s --start-period=1s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
+
+# Launch a non-terminating system process allocation baseline container model.
+# Keeps the worker instance state persistent so the tracking monitoring checks run continuously.
+CMD ["sleep", "3600"]
