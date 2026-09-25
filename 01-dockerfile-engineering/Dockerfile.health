@@ -1,0 +1,15 @@
+# Pull the base lightweight Alpine Linux OS layer to build upon
+FROM alpine:3.18
+
+# Install the networking telemetry check engine payload into the base OS layer.
+# Employs the explicit cache avoidance flag to minimize ultimate layer deployment footprints.
+RUN apk add --no-cache curl
+
+# Configure the native continuous micro-health scan assessment execution script blocks.
+# Schedules standard probe tracking metrics to declare environment status dynamically.
+HEALTHCHECK --interval=5s --timeout=3s --start-period=1s --retries=3 \
+  CMD curl -f http://localhost/ || exit 1
+
+# Launch a non-terminating system process allocation baseline container model.
+# Keeps the worker instance state persistent so the tracking monitoring checks run continuously.
+CMD ["sleep", "3600"]
