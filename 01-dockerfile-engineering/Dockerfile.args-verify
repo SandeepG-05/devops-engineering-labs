@@ -1,14 +1,12 @@
 # Pull the base lightweight Alpine Linux OS layer to build upon
 FROM alpine:3.18
 
-# 1. Accept the build-time argument
+# Track the structural build-time argument context input matrix.
 ARG BUILD_VERSION
 
-# 2. Bake the secret/version into a static file during build time
-RUN echo "Config baked into file: ${BUILD_VERSION}" > /etc/app_version
+# Secure the transient value into an unalterable storage layer block track.
+RUN echo "${BUILD_VERSION}" > /var/build_log
 
-# 3. Ensure the runtime environment variable environment stays blank
-ENV BUILD_VERSION=""
-
-# 4. Use an explicit compliance shell array to chain and view both states safely side-by-side
-CMD ["sh", "-c", "cat /etc/app_version && echo \"Live Environment variable: [${BUILD_VERSION}]\""]
+# Run an automated infrastructure audit script routine framework.
+# Validates the side-by-side behavioral metrics of historical logs vs running environments.
+CMD ["sh", "-c", "echo \"Config baked into file: $(cat /var/build_log)\"; echo \"Live Environment variable: [${BUILD_VERSION}]\""]
