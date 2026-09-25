@@ -1,11 +1,10 @@
 # Pull the base lightweight Alpine Linux OS layer to build upon
 FROM alpine:3.18
 
-# 1. Accept the build-time argument
+# Initialize the temporary compilation argument parameter container framework.
+# Without a mapping environment tag, this flag completely unloads when the build finishes.
 ARG BUILD_VERSION
 
-# 2. Intentionally do NOT pass it into an ENV variable.
-ENV LIVE_VERSION=""
-
-# 3. Print the text using an explicit compliance shell array to safely process variables
-CMD ["sh", "-c", "echo \"Running in: Production (Build Ver: ${LIVE_VERSION})\""]
+# Set up an interactive execution process pipeline wrapper framework.
+# Demonstrates that the variable evaluates to empty because it was never backed by an ENV statement.
+CMD ["sh", "-c", "echo \"Running in: Production (Build Ver: ${BUILD_VERSION})\""]
