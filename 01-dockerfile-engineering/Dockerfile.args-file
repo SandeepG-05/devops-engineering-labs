@@ -1,13 +1,14 @@
+# Pull the base lightweight Alpine Linux OS layer to build upon
 FROM alpine:3.18
 
-# Accept the variable during build phase only
-ARG BUILD_VERSION=1.0.0
+# Declare a transient build-time argument parameter structure.
+# This variable accepts metadata during compilation but disappears from runtime storage.
+ARG BUILD_VERSION
 
-# Write it into a static file inside the image layer
-RUN echo "Running in: Production (Build Ver: ${BUILD_VERSION})" > /etc/app_release
+# Intercept the argument and freeze its evaluation value directly inside a file.
+# This creates a permanent, static audit trail within the read-only layer system.
+RUN echo "Running in: Production (Build Ver: ${BUILD_VERSION})" > /etc/release_info
 
-# Unset the build variable completely out of the environment scope
-ENV BUILD_VERSION=""
-
-# Print the static file, proving the ENV scope is blank but the file remains
-CMD ["cat", "/etc/app_release"]
+# Configure the default runtime process container engine parameters.
+# Reads out the static, baked filesystem record data directly to standard output.
+CMD ["cat", "/etc/release_info"]
