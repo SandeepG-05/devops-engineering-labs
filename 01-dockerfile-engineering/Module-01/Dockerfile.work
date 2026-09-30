@@ -1,0 +1,14 @@
+# Pull the base lightweight Alpine Linux OS layer to build upon
+FROM alpine:3.18
+
+# Establish and transition context parameters to an isolated working space structure.
+# Automatically creates the targeted folder path if it does not yet exist on disk layers.
+WORKDIR /home/sandbox/workspace
+
+# Inject explicit operational constraints by shedding high-level system permissions.
+# Forces the runtime instance to process commands using a non-privileged UID layout.
+USER 10001:10001
+
+# Execute a sequence of local system operations within the workspace directory layers.
+# Validates path health and displays internal asset visibility inside the sandbox boundary.
+CMD ["sh", "-c", "echo 'Initializing secure computing cell...'; touch isolation.txt && ls -la"]
