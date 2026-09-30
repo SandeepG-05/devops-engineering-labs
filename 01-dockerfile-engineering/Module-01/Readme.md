@@ -251,8 +251,10 @@ a1b2c3d4e5f6   test-health   Up 8 seconds (healthy)     80/tcp
 ---
 
 ## 📦 5. Runtime Isolation: Safe Sandbox Directory
+* **Concept:** Enforces clean filesystem segregation by establishing explicit isolation layers (`WORKDIR`) for app execution. To showcase different engineering approaches, we test two distinct behavioral patterns:
+
+### Pattern A: Directory Context Tracking (The Directory Structure)
 * **File:** `Dockerfile.work`
-* **Concept:** Enforces clean filesystem segregation by establishing explicit isolation layers (`WORKDIR`) for app execution.
 
 ### 📄 Dockerfile Content:
 <pre><code># Pull the base lightweight Alpine Linux OS layer to build upon
@@ -274,3 +276,54 @@ docker run --rm test-work
 📋 **Expected Reference Output:**
 ```text
 /opt/enterprise/app
+```
+
+### Pattern B: Non-Privileged Security Barrier (The Hardened Sandbox)
+* **File:** `Dockerfile.sandbox`
+
+### 📄 Dockerfile Content:
+<pre><code># Pull the base lightweight Alpine Linux OS layer to build upon
+FROM alpine:3.18
+
+# Establish and transition context parameters to an isolated working space structure.
+# Automatically creates the targeted folder path if it does not yet exist on disk layers.
+WORKDIR /home/sandbox/workspace
+
+# Inject explicit operational constraints by shedding high-level system permissions.
+# Forces the runtime instance to process commands using a non-privileged UID layout.
+USER 10001:10001
+
+# Execute a sequence of local system operations within the workspace directory layers.
+# Validates path health and displays internal asset visibility inside the sandbox boundary.
+CMD ["sh", "-c", "echo \"Initializing secure computing cell...\"; touch isolation.txt && ls -la"]</code></pre>
+
+```bash
+# Test A: Build and run the sandbox workspace verification
+docker build -t test-sandbox -f Dockerfile.sandbox .
+docker run --rm test-sandbox
+```
+
+📋 **Expected Reference Output:**
+```text
+Initializing secure computing cell...
+total 8
+drwxrwxrwx    2 root     root          4096 Sep 30 11:00 .
+drwxr-xr-x    3 root     root          4096 Sep 30 11:00 ..
+-rw-r--r--    1 10001    10001            0 Sep 30 11:00 isolation.txt
+```
+
+```bash
+# Test B: Execution validation vs standard image (Offline Verification Challenge)
+docker run --rm alpine sh -c "echo 'compromise' > /test.txt && cat /test.txt"
+docker run --rm test-sandbox sh -c "echo 'compromise' > /test.txt"
+```
+
+📋 **Expected Reference Output:**
+```text
+# Output from alpine image:
+compromise
+
+# Output from test-sandbox image:
+sh: can't create /test.txt: Permission denied
+```
+*(💡 Security Note: If test-sandbox ever permits file creation, your container configuration has failed compliance checks!)*
